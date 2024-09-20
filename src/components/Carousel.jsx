@@ -4,10 +4,10 @@ import "../App.css";
 
 function Carousel() {
   return (
-    <div className="minHeight sm:h-96 2xl:h-96">
+    <div className="sm:h-96 2xl:h-96">
       <FlowbiteCarousel className="">       
-          <img src="../../images/slide-bg-1.jpg" alt="..." />
-          <img src="../../images/slide-bg-2.jpg" alt="..." />
+          <img src="../../images/1.jpg" alt="..." />
+          <img src="../../images/4.jpg" alt="..." />
       </FlowbiteCarousel>
       <div></div>
     </div>
