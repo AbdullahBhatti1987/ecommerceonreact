@@ -5,6 +5,7 @@ import Chip from "../components/Chip";
 import { Pagination, Slider } from "antd";
 import { useParams } from "react-router";
 import { SearchContext } from "../context/SearchContext";
+import { AddtoCartContext } from "../context/AddtoCart";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -13,9 +14,20 @@ function Products() {
   const [choosenCategory, setChoosenCategory] = useState("All");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const {id} = useParams();
-  const { search, setSearch} = useContext(SearchContext);
-  const {sortby} = useParams();
+  const { id } = useParams();
+  const { search, setSearch } = useContext(SearchContext);
+  const { sortby } = useParams();
+  const {
+    addtoCart,
+    setAddtoCart,
+    addItemToCart,
+    lessQuanityFromCart,
+    removeItemFromCart,
+    isItemAdded,
+  } = useContext(AddtoCartContext);
+  const [limit, setLimit] = useState(20);
+  const [skip, setSkip] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const onChange = (value) => {
     console.log("onChange: ", value);
@@ -28,9 +40,8 @@ function Products() {
   const handleCategoryClick = (category) => {
     setSearch("");
     setChoosenCategory(category);
-    console.log(category)
+    console.log(category);
   };
-
 
   useEffect(() => {
     // const categoryUrl = choosenCategory === "All"
@@ -38,21 +49,20 @@ function Products() {
     // : `https://dummyjson.com/products/category/${choosenCategory}`;
 
     const categoryUrl = search
-    ? `https://dummyjson.com/products/search?q=${search}`
-    : choosenCategory === "All"
-    ? "https://dummyjson.com/products"
-    : `https://dummyjson.com/products/category/${choosenCategory}`;
-    
+      ? `https://dummyjson.com/products/search?q=${search}`
+      : choosenCategory === "All"
+      ? "https://dummyjson.com/products"
+      : `https://dummyjson.com/products/category/${choosenCategory}`;
+
     // ?  'https://dummyjson.com/products?sortBy=title&order=asc'
 
     axios
-    .get(categoryUrl)
+      .get(categoryUrl)
       .then((url) => {
         setProducts(url.data.products);
         setTotal(url.data.total);
       })
-      .catch((error) => console.log(error));       
-
+      .catch((error) => console.log(error));
   }, [search, choosenCategory]);
 
   useEffect(() => {
@@ -76,9 +86,13 @@ function Products() {
   return (
     <>
       <div className="w-10/12 mx-auto flex gap-2 pt-6 flex-wrap justify-left">
-      <Chip id="All" title="All" onClick={() => handleCategoryClick("All")} />
+        <Chip id="All" title="All" onClick={() => handleCategoryClick("All")} />
         {categories.map((data) => (
-          <Chip key={data.slug} title={data.name} onClick={() => handleCategoryClick(data.name)} />
+          <Chip
+            key={data.slug}
+            title={data.name}
+            onClick={() => handleCategoryClick(data.name)}
+          />
         ))}
       </div>
       <div className="block pt-6">
@@ -108,14 +122,14 @@ function Products() {
         </div>
       </div>
       <div className=" flex flex-wrap my-12 gap-4 mx-auto justify-center">
-        {products.map((data) => ( 
-
+        {products.map((data) => (
           <Card
             key={data.id}
             image={data.thumbnail}
             category={data.category}
             title={data.title}
             price={data.price}
+            onClick={() => addItemToCart(data)}
           />
         ))}
       </div>
