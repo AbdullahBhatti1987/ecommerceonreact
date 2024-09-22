@@ -16,7 +16,7 @@ function Products() {
   const [maxPrice, setMaxPrice] = useState("");
   const { id } = useParams();
   const { search, setSearch } = useContext(SearchContext);
-  const { sortby } = useParams();
+  // const { sortby } = useParams();
   const {
     addtoCart,
     setAddtoCart,
@@ -27,7 +27,9 @@ function Products() {
   } = useContext(AddtoCartContext);
   const [limit, setLimit] = useState(20);
   const [skip, setSkip] = useState(0);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [sortBy, setSortBy] = useState("");
 
   const onChange = (value) => {
     console.log("onChange: ", value);
@@ -43,27 +45,25 @@ function Products() {
     console.log(category);
   };
 
-  useEffect(() => {
-    // const categoryUrl = choosenCategory === "All"
-    // ? "https://dummyjson.com/products"
-    // : `https://dummyjson.com/products/category/${choosenCategory}`;
+  // useEffect(() => {
+  // const categoryUrl = search
+  //   ? `https://dummyjson.com/products/search?q=${search}`
+  //   : choosenCategory === "All"
+  //   ? "https://dummyjson.com/products"
+  //   : `https://dummyjson.com/products/category/${choosenCategory}`;
 
-    const categoryUrl = search
-      ? `https://dummyjson.com/products/search?q=${search}`
-      : choosenCategory === "All"
-      ? "https://dummyjson.com/products"
-      : `https://dummyjson.com/products/category/${choosenCategory}`;
+  //   const categoryUrl = choosenCategory === "All"
+  //   ? "https://dummyjson.com/products"
+  //   : `https://dummyjson.com/products/category/${choosenCategory}`;
 
-    // ?  'https://dummyjson.com/products?sortBy=title&order=asc'
-
-    axios
-      .get(categoryUrl)
-      .then((url) => {
-        setProducts(url.data.products);
-        setTotal(url.data.total);
-      })
-      .catch((error) => console.log(error));
-  }, [search, choosenCategory]);
+  //   axios
+  //     .get(categoryUrl)
+  //     .then((url) => {
+  //       setProducts(url.data.products);
+  //       setTotal(url.data.total);
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, [search, choosenCategory]);
 
   useEffect(() => {
     axios
@@ -75,13 +75,24 @@ function Products() {
   }, []);
 
   useEffect(() => {
+    const ProductsUrl = 
+    sortBy === "a" ? "https://dummyjson.com/products?sortBy=title&order=asc"
+                   : "https://dummyjson.com/products?sortBy=title&order=desc";
+    sor
+
+    "https://dummyjson.com/products?sortBy=price&order=asc";
+    "https://dummyjson.com/products?sortBy=price&order=desc";
+
     axios
-      .get("https://dummyjson.com/products/categories")
-      .then((url) => {
-        setCategories(url.data);
+      .get(ProductsUrl)
+      .then((ProductsUrl) => {
+        setProducts(ProductsUrl.data.products);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [products]);
+
+  //     const HandleSortBy = () => {
+  // };
 
   return (
     <>
@@ -109,14 +120,18 @@ function Products() {
             />
           </div>
           <div>
-            <select name="sortby" id="sortby">
-              <option value="" readOnly>
-                Sort
-              </option>
-              <option value="a to z">Title: A to Z</option>
-              <option value="z to a">Title: Z to A</option>
-              <option value="1000">Price: High to Low</option>
-              <option value="0">Price: Low to High</option>
+            <select
+              name="sortby"
+              id="sortby"
+              onChange={(e) => {
+                setSortBy(e.target.value);
+              }}
+            >
+              <option>Sort</option>
+              <option value="a">Title: A to Z</option>
+              <option value="z">Title: Z to A</option>
+              <option value={9999}>Price: High to Low</option>
+              <option value={0}>Price: Low to High</option>
             </select>
           </div>
         </div>
