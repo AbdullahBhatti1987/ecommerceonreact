@@ -12,8 +12,8 @@ function Products() {
   const [categories, setCategories] = useState([]);
   const [total, setTotal] = useState(0);
   const [choosenCategory, setChoosenCategory] = useState("All");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(15000);
   const { id } = useParams();
   const { search, setSearch } = useContext(SearchContext);
   // const { sortby } = useParams();
@@ -32,38 +32,48 @@ function Products() {
   const [sortBy, setSortBy] = useState("");
 
   const onChange = (value) => {
-    console.log("onChange: ", value);
+    // console.log("onChange: ", value);
     setMinPrice(value);
+
   };
   const onChangeComplete = (value) => {
-    console.log("onChangeComplete: ", value);
+    // console.log("onChangeComplete: ", value);
     setMaxPrice(value);
   };
+
+
   const handleCategoryClick = (category) => {
     setSearch("");
     setChoosenCategory(category);
     console.log(category);
-  };
+  }
+  
 
-  // useEffect(() => {
-  // const categoryUrl = search
-  //   ? `https://dummyjson.com/products/search?q=${search}`
-  //   : choosenCategory === "All"
-  //   ? "https://dummyjson.com/products"
-  //   : `https://dummyjson.com/products/category/${choosenCategory}`;
+  useEffect(() => {
 
-  //   const categoryUrl = choosenCategory === "All"
-  //   ? "https://dummyjson.com/products"
-  //   : `https://dummyjson.com/products/category/${choosenCategory}`;
+    const categoryUrl = choosenCategory === "All"
 
-  //   axios
-  //     .get(categoryUrl)
-  //     .then((url) => {
-  //       setProducts(url.data.products);
-  //       setTotal(url.data.total);
-  //     })
-  //     .catch((error) => console.log(error));
-  // }, [search, choosenCategory]);
+    ? "https://dummyjson.com/products"
+    : `https://dummyjson.com/products/category/${choosenCategory}`
+
+    axios
+      .get(categoryUrl)
+      .then((url) => {
+        // setProducts(url.data.products);
+        setProducts(url.data.products.map((data)=>{data.price >= minPrice && data.price <= maxPrice}));
+        console.log(products)
+        setTotal(url.data.total);
+      })
+      .catch((error) => console.log(error));
+  }, [choosenCategory]);
+
+    // ? `https://dummyjson.com/products/search?q=${search}`
+    // ? "https://dummyjson.com/products?sortBy=title&order=asc"
+    //  :   "https://dummyjson.com/products?sortBy=title&order=desc";
+  //   "https://dummyjson.com/products?sortBy=price&order=asc"
+  //   : "https://dummyjson.com/products?sortBy=price&order=desc";
+
+
 
   useEffect(() => {
     axios
@@ -74,25 +84,7 @@ function Products() {
       .catch((error) => console.log(error));
   }, []);
 
-  useEffect(() => {
-    const ProductsUrl = 
-    sortBy === "a" ? "https://dummyjson.com/products?sortBy=title&order=asc"
-                   : "https://dummyjson.com/products?sortBy=title&order=desc";
-    sor
 
-    "https://dummyjson.com/products?sortBy=price&order=asc";
-    "https://dummyjson.com/products?sortBy=price&order=desc";
-
-    axios
-      .get(ProductsUrl)
-      .then((ProductsUrl) => {
-        setProducts(ProductsUrl.data.products);
-      })
-      .catch((error) => console.log(error));
-  }, [products]);
-
-  //     const HandleSortBy = () => {
-  // };
 
   return (
     <>
@@ -113,11 +105,14 @@ function Products() {
             <Slider
               className="w-48"
               range
-              step={1}
-              defaultValue={[20, 80]}
+              min={0}
+              max={40000}
+              step={100}
+              defaultValue={[150, 25000]}
               onChange={onChange}
               onChangeComplete={onChangeComplete}
             />
+            <p className="text-black flex gap-3 justify-center text-center">Rs:<span>{minPrice ?minPrice[0] : 150}</span>to<span>{minPrice ?minPrice[1] : 25000}</span></p>
           </div>
           <div>
             <select
