@@ -3,9 +3,9 @@ import { createContext, useState } from "react";
 export const SearchContext = createContext();
 
 function SearchContextProvider({ children }) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(null);
 
-  if(search === ""){
+  if(!search){
     console.log("Search Box is Blank")
   } else {
     console.log("Search Item", search)

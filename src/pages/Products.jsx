@@ -9,11 +9,12 @@ import { AddtoCartContext } from "../context/AddtoCart";
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [dummyArr, setDummyArr] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [total, setTotal] = useState(0);
+
   const [choosenCategory, setChoosenCategory] = useState("All");
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(15000);
+  const [maxPrice, setMaxPrice] = useState(0);
   const { id } = useParams();
   const { search, setSearch } = useContext(SearchContext);
   // const { sortby } = useParams();
@@ -25,54 +26,103 @@ function Products() {
     removeItemFromCart,
     isItemAdded,
   } = useContext(AddtoCartContext);
+  const [showItems, setShowItems] = useState("All");
   const [limit, setLimit] = useState(20);
+  const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
-  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [sortBy, setSortBy] = useState("");
+  const [sortBy, setSortBy] = useState(null);
 
   const onChange = (value) => {
-    // console.log("onChange: ", value);
-    setMinPrice(value);
-
+    console.log("onChange: ", value);
+    
   };
+
   const onChangeComplete = (value) => {
-    // console.log("onChangeComplete: ", value);
-    setMaxPrice(value);
+    console.log("onChangeComplete: ", value);
+    const startPrice = value[0];
+    const endPrice = value[1];
+    setMinPrice(startPrice);
+    setMaxPrice(endPrice);
+    // products.filter(data => data.price >= startPrice && data.price <= endPrice)
+    products.length == 0 ? 
+    axios
+    .get("https://dummyjson.com/products")
+        .then((url) => {
+          setProducts(url.data.products);
+        })
+    : setProducts(products.filter(data => data.price >= startPrice && data.price <= endPrice));
   };
-
-
-  const handleCategoryClick = (category) => {
-    setSearch("");
-    setChoosenCategory(category);
-    console.log(category);
-  }
   
 
+  const handleCategoryClick = (category) => {
+    // setSearch("");
+    setChoosenCategory(category);
+    setShowItems(category)
+    setMinPrice(0);
+    setMaxPrice(99999);
+    console.log(category);
+  };
+
   useEffect(() => {
-
-    const categoryUrl = choosenCategory === "All"
-
+    setLoading(true);
+    const categoryUrl = search
+    ? `https://dummyjson.com/products/search?q=${search}`
+    : choosenCategory === "All"
     ? "https://dummyjson.com/products"
     : `https://dummyjson.com/products/category/${choosenCategory}`
-
-    axios
-      .get(categoryUrl)
-      .then((url) => {
-        // setProducts(url.data.products);
-        setProducts(url.data.products.map((data)=>{data.price >= minPrice && data.price <= maxPrice}));
-        console.log(products)
-        setTotal(url.data.total);
-      })
-      .catch((error) => console.log(error));
+    
+      axios
+        .get(categoryUrl)
+        .then((url) => {
+          setProducts(url.data.products);
+          setTotal(url.data.total);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
+    
   }, [choosenCategory]);
 
-    // ? `https://dummyjson.com/products/search?q=${search}`
-    // ? "https://dummyjson.com/products?sortBy=title&order=asc"
-    //  :   "https://dummyjson.com/products?sortBy=title&order=desc";
-  //   "https://dummyjson.com/products?sortBy=price&order=asc"
-  //   : "https://dummyjson.com/products?sortBy=price&order=desc";
-
+    const HandleSortBy = (e) => {
+      const sortValue = e.target.value;  
+      setSortBy(sortValue); 
+      const sortedProducts = sortValue === "atoz"
+        ? products.sort((a, b) => (a.title > b.title ? 1 : -1))  
+        : sortValue === "ztoa"
+        ? products.sort((a, b) => (a.title < b.title ? 1 : -1)) 
+        :sortValue === "0"
+        ? products.sort((a, b) => (a.price > b.price ? 1 : -1))  
+        : sortValue === "9999"
+        ? products.sort((a, b) => (a.price < b.price ? 1 : -1)) 
+        : products;
+      setProducts(sortedProducts); 
+    };
+    
+    
+    
+ // ? "https://dummyjson.com/products?sortBy=title&order=asc" 
+      // : sortBy === "ztoa" 
+      // ? "https://dummyjson.com/products?sortBy=title&order=desc" 
+      // : 
+      // axios
+      //   .get(sortUrl)
+      //   .then((url) => {
+      //     setProducts(url.data.products);
+      //     setTotal(url.data.total);
+      //     setLoading(false);
+      //     setSortBy("")
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //     setLoading(false);
+      //   });
+   
+  // }, [sortBy]);
+  
+  // ? 
 
 
   useEffect(() => {
@@ -84,8 +134,6 @@ function Products() {
       .catch((error) => console.log(error));
   }, []);
 
-
-
   return (
     <>
       <div className="w-10/12 mx-auto flex gap-2 pt-6 flex-wrap justify-left">
@@ -94,7 +142,7 @@ function Products() {
           <Chip
             key={data.slug}
             title={data.name}
-            onClick={() => handleCategoryClick(data.name)}
+            onClick={() => handleCategoryClick(data.slug)}
           />
         ))}
       </div>
@@ -106,27 +154,28 @@ function Products() {
               className="w-48"
               range
               min={0}
-              max={40000}
+              max={10000}
               step={100}
-              defaultValue={[150, 25000]}
+              defaultValue={[5, 9999]}
               onChange={onChange}
               onChangeComplete={onChangeComplete}
             />
-            <p className="text-black flex gap-3 justify-center text-center">Rs:<span>{minPrice ?minPrice[0] : 150}</span>to<span>{minPrice ?minPrice[1] : 25000}</span></p>
+            <p className="text-black flex gap-3 justify-center text-center">
+              Rs:<span>{minPrice ? minPrice : 0}</span>to
+              <span>{maxPrice ? maxPrice : 9999}</span>
+            </p>
           </div>
           <div>
             <select
               name="sortby"
               id="sortby"
-              onChange={(e) => {
-                setSortBy(e.target.value);
-              }}
+              onChange={HandleSortBy}
             >
               <option>Sort</option>
-              <option value="a">Title: A to Z</option>
-              <option value="z">Title: Z to A</option>
-              <option value={9999}>Price: High to Low</option>
-              <option value={0}>Price: Low to High</option>
+              <option value="atoz">Title: A to Z</option>
+              <option value="ztoa">Title: Z to A</option>
+              <option value={"0"}>Price: Low to High</option>
+              <option value={"9999"}>Price: High to Low</option>
             </select>
           </div>
         </div>
@@ -146,12 +195,11 @@ function Products() {
       <div className="w-10/12 mx-auto flex justify-center">
         {" "}
         <Pagination
-          total={total}
-          showTotal={(total, range) =>
-            `${range[0]}-${range[1]} of ${total} items`
-          }
-          defaultPageSize={20}
+          onChange={(num) => {setSkip((num - 1) * limit)}}
+          onShowSizeChange={(page, pageSize) => {setLimit(pageSize)}}
           defaultCurrent={1}
+          total={total}
+          pageSize={limit}
         />
       </div>
     </>
