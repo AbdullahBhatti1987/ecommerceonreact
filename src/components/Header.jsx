@@ -31,7 +31,7 @@ function Header() {
   };
 
   return (
-    <div className="sm:px-6 lg:w-full shadow-md fixed z-50">
+    <div className="sm:px-6 w-full shadow-md fixed z-50">
       <Navbar fluid rounded>
         <Navbar.Brand>
           <PlayCircleOutlined className="mr-6 text-2xl" boolean="false" />
@@ -45,7 +45,7 @@ function Header() {
             onChange={(e) => {
               setSearch(e.target.value.toLocaleLowerCase());
             }}
-            className="rounded-md border-gray-200 border-2 text-sm focus:border-gray-200 focus:bg-gray-100 hidden md:inline-block lg:inline-block"
+            className="rounded-md border-gray-200 border-2 text-sm focus:border-gray-200 focus:bg-gray-100 hidden lg:inline-block lg:inline-block"
           />
           {user.isLogin ? (
             <div className="flex items-center gap-5">
@@ -94,10 +94,6 @@ function Header() {
           <Link to={"contactus"}>Contact Us</Link>
         </Navbar.Collapse>
       </Navbar>
-      <input
-        type="search"
-        className=" w-10/12 px-12 rounded-md border-gray-200 border-2 text-sm focus:border-gray-200 focus:bg-gray-100 md:hidden lg:hidden"
-      />
     </div>
   );
 }
