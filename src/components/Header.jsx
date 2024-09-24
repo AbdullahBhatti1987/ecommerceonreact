@@ -45,7 +45,7 @@ function Header() {
             onChange={(e) => {
               setSearch(e.target.value.toLocaleLowerCase());
             }}
-            className="rounded-md border-gray-200 border-2 text-sm focus:border-gray-200 focus:bg-gray-100 hidden lg:inline-block lg:inline-block"
+            className="rounded-md border-gray-200 border-2 text-sm focus:border-gray-200 focus:bg-gray-100 hidden lg:inline-block"
           />
           {user.isLogin ? (
             <div className="flex items-center gap-5">

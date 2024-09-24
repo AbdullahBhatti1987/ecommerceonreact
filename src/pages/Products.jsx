@@ -39,7 +39,7 @@ function Products() {
     const endPrice = value[1];
     setMinPrice(startPrice);
     setMaxPrice(endPrice);
-    
+
     products.length == 0 ? 
     axios
     .get("https://dummyjson.com/products")
@@ -110,8 +110,8 @@ function Products() {
   }, []);
 
   return (
-    <div className={"relative top-12"}>
-      <div className="w-10/12 mx-auto flex gap-2 pt-6 flex-wrap justify-left">
+    <div className={"relative top-12 sm:ty-3"}>
+      <div className="w-10/12 mx-auto flex gap-2 pt-6 flex-wrap justify-left sm:flex-nowrap overflow-scroll">
         <Chip id="All" title="All" onClick={() => handleCategoryClick("All")} />
         {categories.map((data) => (
           <Chip
@@ -122,7 +122,7 @@ function Products() {
         ))}
       </div>
       <div className="block pt-6">
-        <div className="flex justify-between w-10/12 mx-auto">
+        <div className="lg:w-10/12 w-[90%] flex justify-between items-center gap-4 mx-auto">
           <div className="">
             <p>Price</p>
             <Slider
@@ -155,7 +155,7 @@ function Products() {
           </div>
         </div>
       </div>
-      <div className=" flex flex-wrap my-12 gap-4 mx-auto justify-center">
+      <div className="w-full flex flex-wrap my-12 gap-2 mx-auto justify-center">
         {products.map((data) => (
           <Card
             key={data.id}
@@ -167,7 +167,7 @@ function Products() {
           />
         ))}
       </div>
-      <div className="w-10/12 mx-auto flex justify-center">
+      <div className="w-10/12 mx-auto flex justify-center mb-12">
         {" "}
         <Pagination
           onChange={(num) => {setSkip((num - 1) * limit)}}
