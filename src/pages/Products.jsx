@@ -9,33 +9,28 @@ import { AddtoCartContext } from "../context/AddtoCart";
 
 function Products() {
   const [products, setProducts] = useState([]);
-  const [dummyArr, setDummyArr] = useState([]);
   const [categories, setCategories] = useState([]);
-
   const [choosenCategory, setChoosenCategory] = useState("All");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
-  const { id } = useParams();
-  const { search, setSearch } = useContext(SearchContext);
-  // const { sortby } = useParams();
-  const {
-    addtoCart,
-    setAddtoCart,
-    addItemToCart,
-    lessQuanityFromCart,
-    removeItemFromCart,
-    isItemAdded,
-  } = useContext(AddtoCartContext);
-  const [showItems, setShowItems] = useState("All");
   const [limit, setLimit] = useState(20);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState(null);
+  
+// ==================== Call to params & Context ===========================
 
-  const onChange = (value) => {
-    console.log("onChange: ", value);
-    
+  const { id } = useParams();
+  const { search, setSearch } = useContext(SearchContext);
+  const {
+    addtoCart, setAddtoCart, addItemToCart, lessQuanityFromCart, removeItemFromCart, isItemAdded} = useContext(AddtoCartContext);
+  
+
+// =================== Event Functions ==============================
+
+    const onChange = (value) => {
+    // console.log("onChange: ", value);
   };
 
   const onChangeComplete = (value) => {
@@ -44,7 +39,7 @@ function Products() {
     const endPrice = value[1];
     setMinPrice(startPrice);
     setMaxPrice(endPrice);
-    // products.filter(data => data.price >= startPrice && data.price <= endPrice)
+    
     products.length == 0 ? 
     axios
     .get("https://dummyjson.com/products")
@@ -56,13 +51,13 @@ function Products() {
   
 
   const handleCategoryClick = (category) => {
-    // setSearch("");
     setChoosenCategory(category);
-    setShowItems(category)
     setMinPrice(0);
-    setMaxPrice(99999);
+    setMaxPrice(5000);
     console.log(category);
   };
+
+  // =================== API Call From Dummy JSON =========================
 
   useEffect(() => {
     setLoading(true);
@@ -86,6 +81,8 @@ function Products() {
     
   }, [choosenCategory]);
 
+  // ====================== Sort By Filter ================================
+
     const HandleSortBy = (e) => {
       const sortValue = e.target.value;  
       setSortBy(sortValue); 
@@ -100,30 +97,8 @@ function Products() {
         : products;
       setProducts(sortedProducts); 
     };
-    
-    
-    
- // ? "https://dummyjson.com/products?sortBy=title&order=asc" 
-      // : sortBy === "ztoa" 
-      // ? "https://dummyjson.com/products?sortBy=title&order=desc" 
-      // : 
-      // axios
-      //   .get(sortUrl)
-      //   .then((url) => {
-      //     setProducts(url.data.products);
-      //     setTotal(url.data.total);
-      //     setLoading(false);
-      //     setSortBy("")
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //     setLoading(false);
-      //   });
-   
-  // }, [sortBy]);
-  
-  // ? 
 
+// ========================= Category Chip =================================
 
   useEffect(() => {
     axios
@@ -135,7 +110,7 @@ function Products() {
   }, []);
 
   return (
-    <>
+    <div className={"relative top-12"}>
       <div className="w-10/12 mx-auto flex gap-2 pt-6 flex-wrap justify-left">
         <Chip id="All" title="All" onClick={() => handleCategoryClick("All")} />
         {categories.map((data) => (
@@ -154,15 +129,15 @@ function Products() {
               className="w-48"
               range
               min={0}
-              max={10000}
+              max={5000}
               step={100}
-              defaultValue={[5, 9999]}
+              defaultValue={[5, 5000]}
               onChange={onChange}
               onChangeComplete={onChangeComplete}
             />
             <p className="text-black flex gap-3 justify-center text-center">
               Rs:<span>{minPrice ? minPrice : 0}</span>to
-              <span>{maxPrice ? maxPrice : 9999}</span>
+              <span>{maxPrice ? maxPrice : 5000}</span>
             </p>
           </div>
           <div>
@@ -202,7 +177,7 @@ function Products() {
           pageSize={limit}
         />
       </div>
-    </>
+    </div>
   );
 }
 

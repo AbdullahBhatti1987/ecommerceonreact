@@ -31,7 +31,7 @@ function Header() {
   };
 
   return (
-    <div className="sm:px-6 lg:w-full">
+    <div className="sm:px-6 lg:w-full shadow-md fixed z-50">
       <Navbar fluid rounded>
         <Navbar.Brand>
           <PlayCircleOutlined className="mr-6 text-2xl" boolean="false" />
